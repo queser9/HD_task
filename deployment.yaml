@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medical-appointment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: medical-appointment
+  template:
+    metadata:
+      labels:
+        app: medical-appointment
+    spec:
+      containers:
+      - name: medical-appointment
+        image: gcr.io/my-project-3-425203/medical-appointment-system:latest
+        ports:
+        - containerPort: 3000

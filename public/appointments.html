@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="manage-appointments-container">
+        <div class="left-section">
+            <h1>Manage Appointments</h1>
+            <form id="appointmentForm">
+                <label for="doctor">Doctor:</label>
+                <input type="text" id="doctor" name="doctor">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date">
+                <button type="submit">Schedule Appointment</button>
+            </form>
+        </div>
+        <div class="right-section">
+            <h2>My Appointments</h2>
+            <ul id="appointmentsList"></ul>
+        </div>
+    </div>
+    <script>
+        document.getElementById('appointmentForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const token = localStorage.getItem('token');
+            const response = await fetch('/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({
+                    doctor: event.target.doctor.value,
+                    date: event.target.date.value
+                })
+            });
+            const result = await response.json();
+            alert(result.message);
+        });
+
+        async function loadAppointments() {
+            const token = localStorage.getItem('token');
+            const response = await fetch('/appointments', {
+                headers: {
+                    'Authorization': token
+                }
+            });
+            const appointments = await response.json();
+            const list = document.getElementById('appointmentsList');
+            list.innerHTML = '';
+            appointments.forEach(appointment => {
+                const item = document.createElement('li');
+                item.textContent = `Doctor: ${appointment.doctor}, Date: ${appointment.date}, Status: ${appointment.status}`;
+                list.appendChild(item);
+            });
+        }
+
+        loadAppointments();
+    </script>
+</body>
+</html>
